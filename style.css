@@ -499,6 +499,7 @@ input:checked + .da-content .da-label {
     padding: 10px;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%; /* Garante que ocupe a coluna */
 }
 
 .subgroup-selection-btn:hover {
@@ -509,7 +510,7 @@ input:checked + .da-content .da-label {
 }
 
 .subgroup-selection-btn.selected {
-    background: #f0fdf4; /* Verde bem claro */
+    background: #f0fdf4; 
     border-color: #86efac;
     box-shadow: 0 4px 12px -2px rgba(34, 197, 94, 0.15);
 }
@@ -537,7 +538,6 @@ input:checked + .da-content .da-label {
     transform: scale(1.1);
 }
 
-/* Indicador de Check no canto */
 .check-indicator {
     position: absolute;
     top: -6px;
@@ -559,4 +559,12 @@ input:checked + .da-content .da-label {
 .subgroup-selection-btn.selected .check-indicator {
     opacity: 1;
     transform: scale(1);
+}
+
+/* Animação para o input de permissão */
+.subgroup-perm-input {
+    transition: all 0.3s ease;
+}
+.subgroup-perm-input.hidden {
+    display: none;
 }
