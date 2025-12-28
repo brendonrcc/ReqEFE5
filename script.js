@@ -821,7 +821,7 @@ async function verifyAndAddNickname(inputId, chipsContainerId, hiddenInputId, co
     }
 
     function generateSingleBBCode(title, content) {
-        return `[table style="width: 30%; border: none!important; overflow: hidden; border-radius: 7px; left: 24%; position: relative;  z-index: 2"][tr style="border: none !important;"][td style="border: none!important; padding: 12px"][img(42px,42px)]https://i.imgur.com/U9aXSQB.png[/img][/td][/tr][/table]\n\n [center][table style="width: 20%; border: none!important; overflow: hidden; border-radius: 7px; margin-top: -5.6em; position: relative; font-family: 'Poppins', sans-serif; color: #ffffff; z-index: 1" bgcolor="79a8c3"][tr style="border: none !important;"][td style="border: none!important; padding: 12px"][b]${title}[/b][/td][/tr][/table][/center]\n\n${content}`;
+        return `[table style="width: 30%; border: none!important; overflow: hidden; border-radius: 7px; left: 24%; position: relative;  z-index: 3"][tr style="border: none !important;"][td style="border: none!important; padding: 12px"][img(42px,42px)]https://i.imgur.com/U9aXSQB.png[/img][/td][/tr][/table]\n\n [center][table style="width: 20%; border: none!important; overflow: hidden; border-radius: 7px; margin-top: -5.6em; position: relative; font-family: 'Poppins', sans-serif; color: #ffffff; z-index: 1" bgcolor="79a8c3"][tr style="border: none !important;"][td style="border: none!important; padding: 12px"][b]${title}[/b][/td][/tr][/table][/center]\n\n${content}`;
     }
 
     function generatePostQueue(formId, formData, formElement) {
