@@ -572,185 +572,204 @@ async function verifyAndAddNickname(inputId, chipsContainerId, hiddenInputId, co
     }
 
     function renderDynamicGroups(chipsContainerId, containerId) {
-        const chipsContainer = document.getElementById(chipsContainerId);
-        const targetContainer = document.getElementById(containerId);
-        if(!targetContainer) return; 
+        const chipsContainer = document.getElementById(chipsContainerId);
+        const targetContainer = document.getElementById(containerId);
+        if(!targetContainer) return; 
 
-        const chips = Array.from(chipsContainer.children);
-        const groupsMap = {}; 
-        chips.forEach(c => {
-            const g = c.dataset.group;
-            if(!groupsMap[g]) groupsMap[g] = [];
-            groupsMap[g].push(c.dataset.nick);
-        });
+        const chips = Array.from(chipsContainer.children);
+        const groupsMap = {}; 
+        chips.forEach(c => {
+            const g = c.dataset.group;
+            if(!groupsMap[g]) groupsMap[g] = [];
+            groupsMap[g].push(c.dataset.nick);
+        });
 
-        const activeGroups = Object.keys(groupsMap).sort();
+        const activeGroups = Object.keys(groupsMap).sort();
 
-        Array.from(targetContainer.children).forEach(block => {
-            if (!groupsMap[block.dataset.group]) block.remove();
-        });
+        // Remove grupos que não existem mais
+        Array.from(targetContainer.children).forEach(block => {
+            if (!groupsMap[block.dataset.group]) block.remove();
+        });
 
-        activeGroups.forEach(groupId => {
-            let block = targetContainer.querySelector(`.group-block[data-group="${groupId}"]`);
-            if (!block) {
-                block = document.createElement('div');
-                block.className = 'group-block';
-                block.dataset.group = groupId;
-                
-                const colors = { "1": "#79a8c3", "2": "#f472b6", "3": "#fb923c", "4": "#a78bfa" };
-                const color = colors[groupId] || "#cbd5e1";
+        activeGroups.forEach(groupId => {
+            let block = targetContainer.querySelector(`.group-block[data-group="${groupId}"]`);
+            
+            // Definição de Cores do Grupo
+            const colors = { "1": "#79a8c3", "2": "#f472b6", "3": "#fb923c", "4": "#a78bfa" };
+            const bgColors = { "1": "bg-sky-50/50", "2": "bg-pink-50/50", "3": "bg-orange-50/50", "4": "bg-violet-50/50" };
+            const borderColors = { "1": "border-sky-200", "2": "border-pink-200", "3": "border-orange-200", "4": "border-violet-200" };
+            
+            const color = colors[groupId] || "#cbd5e1";
+            const bgClass = bgColors[groupId] || "bg-slate-50/50";
+            const borderClass = borderColors[groupId] || "border-slate-200";
 
-                let innerHTML = `
-                    <div class="group-block-header" style="color: ${color}">
-                        <span class="group-indicator" style="background: ${color}"></span>
-                        GRUPO ${groupId} - Detalhes
-                    </div>
-                `;
-                
-                if (containerId === 'promocao-dynamic-fields') {
-                    innerHTML += `
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-2.5">
-                        <div class="input-bar">
-                            <div class="input-icon-box !mr-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg></div>
-                            <select name="cargo_atual_g${groupId}" class="input-field" required onchange="checkDemotion(this, '${groupId}')">
-                                <option value="" disabled selected>Cargo Atual</option>
-                                <option value="Professor(a)">Professor(a)</option>
-                                <option value="Mentor(a)">Mentor(a)</option>
-                                <option value="Capacitador(a)">Capacitador(a)</option>
-                                <option value="Graduador(a)">Graduador(a)</option>
-                                <option value="Estagiário(a)">Estagiário(a)</option>
-                                <option value="Ministro">Ministro</option>
-                                <option value="Vice-Líder">Vice-líder</option>
-                                <option value="Líder">Líder</option>
-                            </select>
-                        </div>
-                        <div class="input-bar">
-                            <div class="input-icon-box !mr-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg></div>
-                            <select name="novo_cargo_g${groupId}" class="input-field" required onchange="checkDemotion(this, '${groupId}')">
-                                <option value="" disabled selected>Novo Cargo</option>
-                                <option value="Professor(a)">Professor(a)</option>
-                                <option value="Mentor(a)">Mentor(a)</option>
-                                <option value="Capacitador(a)">Capacitador(a)</option>
-                                <option value="Graduador(a)">Graduador(a)</option>
-                                <option value="Estagiário(a)">Estagiário(a)</option>
-                                <option value="Ministro">Ministro</option>
-                                <option value="Vice-Líder">Vice-líder</option>
-                                <option value="Líder">Líder</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-2.5">
-                        <div class="input-bar">
-                             <div class="input-icon-box"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg></div>
-                            <input type="date" name="data_g${groupId}" class="input-field" required>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="input-bar textarea-bar">
-                             <div class="input-icon-box pt-1 h-8"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" /></svg></div>
-                            <textarea name="motivo_g${groupId}" class="textarea-field" placeholder="Motivo da alteração..." required></textarea>
-                        </div>
-                    </div>
-                    <div id="proofs_container_g${groupId}" class="hidden flex flex-col gap-2 mt-2.5 bg-white/40 p-2 rounded-xl border border-white/50">
-                        <span class="text-[10px] uppercase font-bold text-slate-500 ml-1">Comprovações Individuais (Rebaixamento)</span>
-                        <div class="proofs-list-slot"></div>
-                    </div>
-                    `;
+            if (!block) {
+                block = document.createElement('div');
+                // --- CORREÇÃO VISUAL: Container do Grupo mais robusto ---
+                block.className = `group-block w-full mb-4 p-3 rounded-xl border ${borderClass} ${bgClass} backdrop-blur-sm transition-all`;
+                block.dataset.group = groupId;
+                
+                let innerHTML = `
+                    <div class="flex items-center gap-2 mb-3 pb-2 border-b border-black/5" style="color: ${color}">
+                        <div class="w-2 h-8 rounded-full" style="background: ${color}"></div>
+                        <span class="font-bold text-sm tracking-wide uppercase">GRUPO ${groupId} - Detalhes</span>
+                    </div>
+                `;
+                
+                // --- CAMPOS DE PROMOÇÃO ---
+                if (containerId === 'promocao-dynamic-fields') {
+                    innerHTML += `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                        <div class="input-bar !bg-white">
+                            <div class="input-icon-box !mr-2 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg></div>
+                            <select name="cargo_atual_g${groupId}" class="input-field bg-transparent" required onchange="checkDemotion(this, '${groupId}')">
+                                <option value="" disabled selected>Cargo Atual</option>
+                                <option value="Professor(a)">Professor(a)</option>
+                                <option value="Mentor(a)">Mentor(a)</option>
+                                <option value="Capacitador(a)">Capacitador(a)</option>
+                                <option value="Graduador(a)">Graduador(a)</option>
+                                <option value="Estagiário(a)">Estagiário(a)</option>
+                                <option value="Ministro">Ministro</option>
+                                <option value="Vice-Líder">Vice-líder</option>
+                                <option value="Líder">Líder</option>
+                            </select>
+                        </div>
+                        <div class="input-bar !bg-white">
+                            <div class="input-icon-box !mr-2 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg></div>
+                            <select name="novo_cargo_g${groupId}" class="input-field bg-transparent" required onchange="checkDemotion(this, '${groupId}')">
+                                <option value="" disabled selected>Novo Cargo</option>
+                                <option value="Professor(a)">Professor(a)</option>
+                                <option value="Mentor(a)">Mentor(a)</option>
+                                <option value="Capacitador(a)">Capacitador(a)</option>
+                                <option value="Graduador(a)">Graduador(a)</option>
+                                <option value="Estagiário(a)">Estagiário(a)</option>
+                                <option value="Ministro">Ministro</option>
+                                <option value="Vice-Líder">Vice-líder</option>
+                                <option value="Líder">Líder</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="input-bar !bg-white">
+                             <div class="input-icon-box text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg></div>
+                            <input type="date" name="data_g${groupId}" class="input-field bg-transparent" required>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="input-bar textarea-bar !bg-white">
+                             <div class="input-icon-box pt-1 h-8 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" /></svg></div>
+                            <textarea name="motivo_g${groupId}" class="textarea-field bg-transparent" placeholder="Motivo da alteração..." required></textarea>
+                        </div>
+                    </div>
+                    <div id="proofs_container_g${groupId}" class="hidden flex-col gap-2 mt-3 bg-red-50/80 p-3 rounded-lg border border-red-100">
+                        <div class="flex items-center gap-2 mb-1 text-red-600">
+                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                             <span class="text-xs uppercase font-bold">Provas de Rebaixamento</span>
+                        </div>
+                        <div class="proofs-list-slot flex flex-col gap-2"></div>
+                    </div>
+                    `;
 
-                } else if (containerId === 'advertencia-dynamic-fields') {
-                    innerHTML += `
-                    <div class="mb-2.5">
-                        <div class="input-bar">
-                            <div class="input-icon-box !mr-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /></svg></div>
-                            <select name="tipo_g${groupId}" class="input-field" required>
-                                <option value="" disabled selected>Tipo da Punição</option>
-                                <option value="Erro">Erro</option>
-                                <option value="Advertência Verbal">Advertência Verbal</option>
-                                <option value="Advertência Interna">Advertência Interna</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="input-bar textarea-bar">
-                             <div class="input-icon-box pt-1 h-8"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" /></svg></div>
-                            <textarea name="motivo_g${groupId}" class="textarea-field" placeholder="Motivo(s) da advertência..." required></textarea>
-                        </div>
-                    </div>
-                    <div id="proofs_container_g${groupId}" class="flex flex-col gap-2 mt-2.5 bg-white/40 p-2 rounded-xl border border-white/50">
-                        <span class="text-[10px] uppercase font-bold text-slate-500 ml-1">Comprovações Individuais</span>
-                        <div class="proofs-list-slot"></div>
-                    </div>
-                    `;
-                } else {
-                    const isExpulsao = containerId === 'expulsao-dynamic-fields';
-                    
-                    innerHTML += `
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-2.5">
-                        <div class="input-bar">
-                            <div class="input-icon-box !mr-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg></div>
-                            <select name="cargo_g${groupId}" class="input-field" required>
-                                <option value="" disabled selected>Cargo</option>
-                                <option value="Professor(a)">Professor(a)</option>
-                                <option value="Mentor(a)">Mentor(a)</option>
-                                <option value="Capacitador(a)">Capacitador(a)</option>
-                                <option value="Graduador(a)">Graduador(a)</option>
-                                <option value="Estagiário(a)">Estagiário(a)</option>
-                                <option value="Ministro">Ministro</option>
-                                <option value="Vice-Líder">Vice-líder</option>
-                                <option value="Líder">Líder</option>
-                            </select>
-                        </div>
-                        <div class="input-bar textarea-bar">
-                            <div class="input-icon-box pt-1 h-8"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" /></svg></div>
-                            <textarea name="motivo_g${groupId}" class="textarea-field" placeholder="Motivo..." required></textarea>
-                        </div>
-                    </div>`;
+                // --- CAMPOS DE ADVERTÊNCIA ---
+                } else if (containerId === 'advertencia-dynamic-fields') {
+                    innerHTML += `
+                    <div class="mb-3">
+                        <div class="input-bar !bg-white">
+                            <div class="input-icon-box !mr-2 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /></svg></div>
+                            <select name="tipo_g${groupId}" class="input-field bg-transparent" required>
+                                <option value="" disabled selected>Tipo da Punição</option>
+                                <option value="Erro">Erro</option>
+                                <option value="Advertência Verbal">Advertência Verbal</option>
+                                <option value="Advertência Interna">Advertência Interna</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="input-bar textarea-bar !bg-white">
+                             <div class="input-icon-box pt-1 h-8 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" /></svg></div>
+                            <textarea name="motivo_g${groupId}" class="textarea-field bg-transparent" placeholder="Motivo(s) da advertência..." required></textarea>
+                        </div>
+                    </div>
+                    <div id="proofs_container_g${groupId}" class="flex flex-col gap-2 mt-3 bg-white/60 p-3 rounded-lg border border-white/70">
+                        <span class="text-[10px] uppercase font-bold text-slate-500 ml-1">Comprovações Individuais</span>
+                        <div class="proofs-list-slot flex flex-col gap-2"></div>
+                    </div>
+                    `;
+                
+                // --- CAMPOS DE SAÍDA / EXPULSÃO ---
+                } else {
+                    const isExpulsao = containerId === 'expulsao-dynamic-fields';
+                    
+                    innerHTML += `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                        <div class="input-bar !bg-white">
+                            <div class="input-icon-box !mr-2 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg></div>
+                            <select name="cargo_g${groupId}" class="input-field bg-transparent" required>
+                                <option value="" disabled selected>Cargo</option>
+                                <option value="Professor(a)">Professor(a)</option>
+                                <option value="Mentor(a)">Mentor(a)</option>
+                                <option value="Capacitador(a)">Capacitador(a)</option>
+                                <option value="Graduador(a)">Graduador(a)</option>
+                                <option value="Estagiário(a)">Estagiário(a)</option>
+                                <option value="Ministro">Ministro</option>
+                                <option value="Vice-Líder">Vice-líder</option>
+                                <option value="Líder">Líder</option>
+                            </select>
+                        </div>
+                        <div class="input-bar textarea-bar !bg-white col-span-1 sm:col-span-1">
+                            <div class="input-icon-box pt-1 h-8 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" /></svg></div>
+                            <textarea name="motivo_g${groupId}" class="textarea-field bg-transparent" placeholder="Motivo..." required></textarea>
+                        </div>
+                    </div>`;
 
-                    if(isExpulsao) {
-                        innerHTML += `
-                        <div id="proofs_container_g${groupId}" class="flex flex-col gap-2 mt-0 bg-white/40 p-2 rounded-xl border border-white/50">
-                            <span class="text-[10px] uppercase font-bold text-slate-500 ml-1">Comprovações Individuais</span>
-                            <div class="proofs-list-slot"></div>
-                        </div>`;
-                    }
-                }
-                
-                block.innerHTML = innerHTML;
-                targetContainer.appendChild(block);
-            }
+                    if(isExpulsao) {
+                        innerHTML += `
+                        <div id="proofs_container_g${groupId}" class="flex flex-col gap-2 mt-3 bg-white/60 p-3 rounded-lg border border-white/70">
+                            <span class="text-[10px] uppercase font-bold text-slate-500 ml-1">Comprovações Individuais</span>
+                            <div class="proofs-list-slot flex flex-col gap-2"></div>
+                        </div>`;
+                    }
+                }
+                
+                block.innerHTML = innerHTML;
+                targetContainer.appendChild(block);
+            }
 
-            const proofsContainer = block.querySelector(`#proofs_container_g${groupId}`);
-            if(proofsContainer) {
-                const slot = proofsContainer.querySelector('.proofs-list-slot');
-                const nicksInGroup = groupsMap[groupId];
-                
-                slot.innerHTML = ''; 
+            // --- ATUALIZAÇÃO DA LISTA DE PROVAS (AVATARES) ---
+            const proofsContainer = block.querySelector(`#proofs_container_g${groupId}`);
+            if(proofsContainer) {
+                const slot = proofsContainer.querySelector('.proofs-list-slot');
+                const nicksInGroup = groupsMap[groupId];
+                
+                slot.innerHTML = ''; 
 
-                nicksInGroup.forEach(nick => {
-                    const safeNick = nick.replace(/[^a-zA-Z0-9]/g, '_'); 
-                    const inputName = `comprovacoes_g${groupId}_${safeNick}`; 
-                    
-                    const imgUrl = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${nick}&headonly=1&direction=2&head_direction=2&size=s`;
+                nicksInGroup.forEach(nick => {
+                    const safeNick = nick.replace(/[^a-zA-Z0-9]/g, '_'); 
+                    const inputName = `comprovacoes_g${groupId}_${safeNick}`; 
+                    const imgUrl = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${nick}&headonly=1&direction=2&head_direction=2&size=s`;
 
-                    const row = document.createElement('div');
-                    row.className = "flex items-center gap-2";
-                    row.innerHTML = `
-                        <div class="w-8 h-8 rounded-lg bg-white/60 flex items-center justify-center flex-shrink-0 shadow-sm border border-white/60 overflow-hidden">
-                            <img src="${imgUrl}" class="opacity-80 grayscale-[30%]">
-                        </div>
-                        <div class="input-bar !h-[42px] !min-h-0 !p-0 !bg-white/70 w-full mb-1">
-                             <input type="text" name="${inputName}" placeholder="Prova para ${nick}..." class="input-field !text-xs !px-3" required>
-                        </div>
-                    `;
-                    slot.appendChild(row);
-                });
-            }
-        });
-        
-        const blocks = Array.from(targetContainer.children);
-        blocks.sort((a, b) => a.dataset.group - b.dataset.group);
-        blocks.forEach(b => targetContainer.appendChild(b));
-    }
+                    const row = document.createElement('div');
+                    // Correção visual do Avatar + Input
+                    row.className = "flex items-center gap-2 bg-white/50 p-1.5 rounded-lg border border-white/60 shadow-sm";
+                    
+                    row.innerHTML = `
+                        <div class="w-8 h-8 rounded-md bg-white flex items-center justify-center flex-shrink-0 border border-slate-100 overflow-hidden">
+                            <img src="${imgUrl}" class="opacity-90 grayscale-[20%] scale-110" alt="${nick}">
+                        </div>
+                        <div class="flex-1 relative">
+                             <input type="text" name="${inputName}" placeholder="Prova para ${nick}..." class="w-full text-xs px-2 py-1.5 bg-transparent outline-none text-slate-700 placeholder:text-slate-400 font-medium rounded" required>
+                        </div>
+                    `;
+                    slot.appendChild(row);
+                });
+            }
+        });
+        
+        // Reordena visualmente para garantir 1, 2, 3, 4
+        const blocks = Array.from(targetContainer.children);
+        blocks.sort((a, b) => a.dataset.group - b.dataset.group);
+        blocks.forEach(b => targetContainer.appendChild(b));
+    }
 
     window.checkDemotion = function(selectElem, groupIdStr) {
         const block = selectElem.closest('.group-block');
